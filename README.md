@@ -5,9 +5,20 @@ See lsp-notes.md for more details.
 
 Requirements:
 
-The server should be interfacable using JSON-RPC.
-Expected i/o is defined in lsp-notes.md
-Capabilties/features defined in capabilities.md, should be listed once lsp-notes is near-completion.
+- The server should be interfacable using JSON-RPC.
+- Expected i/o is defined in lsp-notes.md
+- Capabilties/features defined in capabilities.md, should be listed once lsp-notes is near-completion.
+
+Lifecycle of the server (updated with my understanding):
+- Client spawns an instance of the server
+- Client send an `Initialise` request (all other requests/notifications are dropped, par exits)
+- Server sends `InitialiseResult` response
+- Client-Server negotiates different capabilities to determine appropriate server-side logic
+- Client sends requests, which are linearly processed by the server
+- Server completes actions, with logic based on capabilities and returns a response
+- Client can query progress for some tasks before a response is sent
+- Client continues to send requests
+- Client shutsdown process with an `exit notification`
 
 Current TODOS {
     utils: [decoding JSON, decoding URI format],
