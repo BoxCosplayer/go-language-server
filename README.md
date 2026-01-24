@@ -1,7 +1,8 @@
 Development is explicitly to support GOatpad, however values and functions shouldnt be hardcoded to strictly match GOatpad functionality.
 In other words, though this project should be made to support Goatpad first (which should definelty be kept in mind during development and should dictate the order of features being built), the LSP specification needs to be adhered to. 
 
-See lsp-notes.md for more details.
+See ./notes/lsp-notes.md for more details.
+note: all notes are updates for lsp version 3.17, and does not include depreceated features.
 
 Requirements:
 
