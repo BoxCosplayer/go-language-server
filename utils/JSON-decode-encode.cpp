@@ -3,7 +3,7 @@
 // Messages can be 1 of 3 types:
 
 // Requests:
-// json {
+//{json
 //     "jsonprc": "2.0",
 //     "id": int
 //     "method": string // "TypeOfTask/Task"
@@ -13,7 +13,7 @@
 // }
 
 // Notifications:
-// json {
+// {json
 //     "jsonprc": "2.0",
 //     "method": string // "TypeOfTask/Task"
 //     "params": {
@@ -22,7 +22,7 @@
 // }
 
 // Batches:
-// json {
+// {json
 //     [message1, message2, message3, ...]
 // }
 

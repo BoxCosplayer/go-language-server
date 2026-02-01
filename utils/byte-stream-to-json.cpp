@@ -40,7 +40,7 @@ parse_headers(const std::string &header_block)
 // Reads one LSP message body into out_json. Returns false on EOF/stream error.
 bool read_lsp_message(std::istream &in, std::string &out_json)
 {
-    std::string buffer;
+    static std::string buffer;
     char chunk[4096];
 
     std::size_t sep = std::string::npos;
@@ -79,6 +79,9 @@ bool read_lsp_message(std::istream &in, std::string &out_json)
     // Body begins after CRLFCRLF, and is "content_len" bytes long
     size_t content_len = static_cast<size_t>(std::stoul(it->second));
     size_t body_start = sep + 4;
+
+    if (content_len > out_json.max_size())
+        return false;
 
     // Read body block
     while (buffer.size() < body_start + content_len)
