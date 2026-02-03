@@ -58,7 +58,7 @@ namespace
         }
     }
 
-    // Reads JSON input
+    // Reads JSON sting value
     bool parse_string(const std::string &s, size_t &i, std::string &out)
     {
         // If cursor is after the EoS
@@ -70,6 +70,8 @@ namespace
         out.clear();
 
         // While cursor is within bounds of string
+        // If the starting character was a closing '"', then the cursor is at EoS
+        // so it fails the check after "++i;"
         while (i < s.size())
         {
             // Read the current character and increment the cursor
@@ -265,6 +267,157 @@ namespace
 
         // Store as float
         out = static_cast<float>(value);
+        return true;
+    }
+
+    // Jump cursor to 1 character after the value
+    bool skip_value(const std::string &s, size_t &i)
+    {
+        // If there's whitespace at the cursor, ignore it
+        skip_ws(s, i);
+        if (i >= s.size())
+            return false;
+
+        char c = s[i];
+
+        // Advance the cursor past the value
+        switch (c)
+        {
+        // Start (or end) of a string
+        case '"':
+        {
+            std::string tmp;
+            return parse_string(s, i, tmp);
+        }
+        // Start of block
+        case '{':
+        {
+            ++i;
+            skip_ws(s, i);
+            // If cursor is at end of block...
+            if (i < s.size() && s[i] == '}')
+            {
+                ++i;
+                return true;
+            }
+            while (i < s.size())
+            {
+                // Atteomt to parse the key
+                std::string key;
+
+                // If theres no key
+                if (!parse_string(s, i, key))
+                    return false;
+
+                // If there is key, parse_string advanced cursor to the :
+                skip_ws(s, i);
+
+                // Fail if there is no separator key
+                if (i >= s.size() || s[i] != ':')
+                    return false;
+                ++i;
+
+                // Consume the value as normal
+                if (!skip_value(s, i))
+                    // If the value parsing fails, then float the fail up the stack
+                    return false;
+
+                // Check to ensure the end of block character
+                // is in string
+                // Cursor is at end of a value + whitespace here
+                skip_ws(s, i);
+                if (i >= s.size())
+                    return false;
+
+                // If there are more key-value pairs, go again
+                if (s[i] == ',')
+                {
+                    ++i;
+                    skip_ws(s, i);
+                    continue;
+                }
+
+                // If at end of block, skip finished
+                if (s[i] == '}')
+                {
+                    ++i;
+                    return true;
+                }
+                // If havent hit end of block yet, fail
+                return false;
+            }
+            // If bounds exceeded, fail
+            return false;
+        }
+        // Start of array
+        case '[':
+        {
+            // Skip to next value
+            ++i;
+            skip_ws(s, i);
+
+            // If array is empty
+            if (i < s.size() && s[i] == ']')
+            {
+                ++i;
+                return true;
+            }
+            // For every value in bounds...
+            while (i < s.size())
+            {
+                // If value/block is malformed, fail
+                if (!skip_value(s, i))
+                    return false;
+
+                skip_ws(s, i);
+                if (i >= s.size())
+                    return false;
+
+                // If there is another value in array, continue
+                if (s[i] == ',')
+                {
+                    ++i;
+                    skip_ws(s, i);
+                    continue;
+                }
+                // Correct end of block check
+                if (s[i] == ']')
+                {
+                    ++i;
+                    return true;
+                }
+                // Malformed array, missing or in valid separator / ']'
+                return false;
+            }
+            // Bounds has been exceeded, fail
+            return false;
+        }
+
+        // Check for any common non-string terms
+        case 't':
+            return parse_literal(s, i, "true");
+        case 'f':
+            return parse_literal(s, i, "false");
+        case 'n':
+            return parse_literal(s, i, "null");
+        default:
+            break;
+        }
+
+        // Not a string, not any special block-type characters
+        // not any non-string terms, assume it is a number
+        std::string token;
+        return parse_number_token(s, i, token);
+    }
+
+    // Extracts value into outstring
+    bool extract_raw_value(const std::string &s, size_t &i, std::string &out)
+    {
+        skip_ws(s, i);
+        size_t start = i;
+        if (!skip_value(s, i))
+            return false;
+        out = s.substr(start, i - start);
         return true;
     }
 } // namespace
