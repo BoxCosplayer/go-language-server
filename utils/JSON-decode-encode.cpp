@@ -421,3 +421,170 @@ namespace
         return true;
     }
 } // namespace
+
+// The parts of the message that I need to memoise
+struct message
+{
+    float jsonrpc;
+    int id;
+    bool has_id;
+    std::string method;
+    std::string params_json;
+};
+
+bool storeMessage(std::string *json)
+{
+    // Extracts info from {"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}
+    // into the struct defined above
+    if (json == nullptr)
+        return false;
+
+    const std::string &s = *json;
+    size_t i = 0;
+    skip_ws(s, i);
+    if (i >= s.size())
+        return false;
+
+    // TODO(Raj): implement batch handling
+    if (s[i] == '[')
+        return false;
+
+    // Ensures that the json is valid
+    if (s[i] != '{')
+        return false;
+    ++i;
+
+    message msg{};
+    msg.jsonrpc = 0.0f;
+    msg.id = 0;
+    msg.has_id = false;
+    msg.method.clear();
+    msg.params_json.clear();
+    bool has_jsonrpc = false;
+
+    while (i < s.size())
+    {
+        skip_ws(s, i);
+        if (i >= s.size())
+            return false;
+
+        // When the end json character is detected, message is read
+        if (s[i] == '}')
+        {
+            ++i;
+            break;
+        }
+
+        // Should be expected key:val pairs from now
+
+        // If no key, not valid json
+        std::string key;
+        if (!parse_string(s, i, key))
+            return false;
+
+        // Key processed, value next
+        skip_ws(s, i);
+
+        // Check for separator character
+        if (i >= s.size() || s[i] != ':')
+            return false;
+        ++i;
+        skip_ws(s, i);
+
+        // Cursor is currently at value[0]
+        if (key == "jsonrpc")
+        {
+            if (i >= s.size())
+                return false;
+
+            // If value is a string
+            if (s[i] == '"')
+            {
+                std::string v;
+                if (!parse_string(s, i, v))
+                    return false;
+
+                // If value isnt a float, error out
+                if (!parse_float_str(v, msg.jsonrpc))
+                    return false;
+            }
+            // Value is a 'number'
+            else
+            {
+                std::string v;
+                if (!parse_number_token(s, i, v))
+                    return false;
+
+                // If value isnt a float, error out
+                if (!parse_float_str(v, msg.jsonrpc))
+                    return false;
+            }
+            has_jsonrpc = true;
+        }
+        else if (key == "id")
+        {
+            // Value is either "null" or an int
+            if (parse_literal(s, i, "null"))
+            {
+                msg.has_id = false;
+            }
+            else
+            {
+                int id = 0;
+                if (!parse_number_int(s, i, id))
+                    return false;
+                msg.id = id;
+                msg.has_id = true;
+            }
+        }
+        else if (key == "method")
+        {
+            // Method must be a string
+            if (!parse_string(s, i, msg.method))
+                return false;
+        }
+        else if (key == "params")
+        {
+            // Params could be anything
+            if (!extract_raw_value(s, i, msg.params_json))
+                return false;
+        }
+        else
+        {
+            // We don't care about this value (at least for now)
+            if (!skip_value(s, i))
+                return false;
+        }
+
+        skip_ws(s, i);
+        if (i >= s.size())
+            return false;
+
+        // Continue if there are more values, otherwise end of block reached
+        if (s[i] == ',')
+        {
+            ++i;
+            continue;
+        }
+        if (s[i] == '}')
+        {
+            ++i;
+            break;
+        }
+        return false;
+    }
+
+    skip_ws(s, i);
+    // Check to see if the content-length fails, and the json string has extra characters
+    if (i != s.size())
+        return false;
+
+    // Reponse found, not a request / notification
+    if (!has_jsonrpc || msg.method.empty())
+        return false;
+
+    // Message stored
+    static message last_message;
+    last_message = msg;
+    return true;
+}
