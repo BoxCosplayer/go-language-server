@@ -3,44 +3,53 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
-
-// JSON deserialisation (decoding a message)
-
-// Messages can be 1 of 3 types:
-
-// Requests:
-//{json
-//     "jsonrpc": "2.0",
-//     "id": int
-//     "method": string // "TypeOfTask/Task"
-//     "params": {
-//         ...
-//     }
-// }
-
-// Notifications:
-// {json
-//     "jsonprc": "2.0",
-//     "method": string // "TypeOfTask/Task"
-//     "params": {
-//         ...
-//     }
-// }
-
-// Batches:
-// {json
-//     [message1, message2, message3, ...]
-// }
-// NOTE: batches are sorted automatically by `byte-stream-to-json.cpp`
+#include <optional>
 
 /*
-struct message
+JSON deserialisation (decoding a message)
+
+Messages (Incoming or outgoing) can be 1 of 4 types:
+
+Requests:
+{json
+    "jsonrpc": "2.0",
+    "id": int
+    "method": string // "TypeOfTask/Task"
+    "params": {
+        ...
+    }
+}
+
+Notifications:
+{json
+    "jsonprc": "2.0",
+    "method": string // "TypeOfTask/Task"
+    "params": {
+        ...
+    }
+}
+
+Batches:
+{json
+    [message1, message2, message3, ...]
+}
+// NOTE: batches are sorted automatically by `byte-stream-to-json.cpp`
+
+Response:
+{json
+    "jsonrpc":
+    "result": string;
+    "error": string;
+}
+
+struct incomingMessage
 {
     float jsonrpc;
-    int id;
-    bool has_id;
+    int id = "null";
     std::string method;
-    std::string params_json;
+    std::string params_json = "";
+    std::string result = null;
+    std::string error = null;
 };
 */
 
@@ -422,30 +431,28 @@ namespace
     }
 } // namespace
 
-// The parts of the message that I need to memoise
-struct message
+// Generic message, before determining which type it is
+struct incomingMessage
 {
-    float jsonrpc;
-    int id;
-    bool has_id;
-    std::string method;
-    std::string params_json;
+    float jsonrpc; // Required in all incoming messages, so no default
+    std::optional<int> id = std::nullopt;
+    std::optional<std::string> method = std::nullopt;
+    std::optional<std::string> params_json = std::nullopt;
+    std::optional<std::string> result = std::nullopt;
+    std::optional<std::string> error = std::nullopt;
 };
 
-bool storeMessage(std::string *json)
+bool storeMessage(const std::string &json, incomingMessage &out)
 {
     // Extracts info from {"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}
     // into the struct defined above
-    if (json == nullptr)
-        return false;
-
-    const std::string &s = *json;
+    const std::string &s = json;
     size_t i = 0;
     skip_ws(s, i);
     if (i >= s.size())
         return false;
 
-    // TODO(Raj): implement batch handling
+    // This character indicates a batch, which is handled by byte-stream-to-json.cpp
     if (s[i] == '[')
         return false;
 
@@ -454,12 +461,7 @@ bool storeMessage(std::string *json)
         return false;
     ++i;
 
-    message msg{};
-    msg.jsonrpc = 0.0f;
-    msg.id = 0;
-    msg.has_id = false;
-    msg.method.clear();
-    msg.params_json.clear();
+    incomingMessage msg{};
     bool has_jsonrpc = false;
 
     while (i < s.size())
@@ -524,30 +526,29 @@ bool storeMessage(std::string *json)
         else if (key == "id")
         {
             // Value is either "null" or an int
-            if (parse_literal(s, i, "null"))
-            {
-                msg.has_id = false;
-            }
-            else
+            if (!parse_literal(s, i, "null"))
             {
                 int id = 0;
                 if (!parse_number_int(s, i, id))
                     return false;
                 msg.id = id;
-                msg.has_id = true;
             }
         }
         else if (key == "method")
         {
             // Method must be a string
-            if (!parse_string(s, i, msg.method))
+            std::string method;
+            if (!parse_string(s, i, method))
                 return false;
+            msg.method = method;
         }
         else if (key == "params")
         {
             // Params could be anything
-            if (!extract_raw_value(s, i, msg.params_json))
+            std::string params = "";
+            if (!extract_raw_value(s, i, params))
                 return false;
+            msg.params_json = params;
         }
         else
         {
@@ -579,12 +580,11 @@ bool storeMessage(std::string *json)
     if (i != s.size())
         return false;
 
-    // Reponse found, not a request / notification
-    if (!has_jsonrpc || msg.method.empty())
+    // Message parsed, but doesnt have all the required parameters (just jsonprc for now)
+    if (!has_jsonrpc)
         return false;
 
     // Message stored
-    static message last_message;
-    last_message = msg;
+    out = msg;
     return true;
 }

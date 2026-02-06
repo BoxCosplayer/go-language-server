@@ -1,3 +1,8 @@
+#include <string>
+#include <unordered_map>
+#include <sstream>
+#include <istream>
+
 // Each Message is recieved via byte streams
 // We want JSON
 
@@ -8,11 +13,6 @@
 // //\r\n
 // Content-Type: string // Should be "application/ide-jsonrpc; charset=utf8" -- charset should always be set to utf-8
 // \r\n\r\n
-
-#include <string>
-#include <unordered_map>
-#include <sstream>
-#include <istream>
 
 // Parse headers into a map
 static std::unordered_map<std::string, std::string>
@@ -105,6 +105,9 @@ bool read_lsp_message(std::istream &in, std::string &out_json)
     return true;
 
     // the headers do not need to be memorised from here, so it should be safe to call
-    // the json deserialisation functions directly to start decoding the body
+    // the json deserialisation functions directly to start decoding the body??
+    // but then the file wouldnt be
+    // byte-stream -> json,     it would be
+    // byte-stream -> message
     // something to think about
 }
