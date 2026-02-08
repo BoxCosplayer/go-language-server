@@ -44,12 +44,12 @@ Response:
 
 struct incomingMessage
 {
-    float jsonrpc;
-    int id = "null";
-    std::string method;
-    std::string params_json = "";
-    std::string result = null;
-    std::string error = null;
+    float jsonrpc
+    std::optional<int>
+    std::optional<std::string> method
+    std::optional<std::string> params_json
+    std::optional<std::string> result
+    std::optional<std::string> error
 };
 */
 

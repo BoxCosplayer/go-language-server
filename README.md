@@ -1,14 +1,14 @@
 Development is explicitly to support GOatpad, however values and functions shouldnt be hardcoded to strictly match GOatpad functionality.
 In other words, though this project should be made to support Goatpad first (which should definelty be kept in mind during development and should dictate the order of features being built), the LSP specification needs to be adhered to. 
 
-See ./notes/lsp-notes.md for more details.
+See ./notes/.Notes-header.md for more details.
 note: all notes are updates for lsp version 3.17, and does not include depreceated features.
 
 Requirements:
 
 - The server should be interfacable using JSON-RPC.
-- Expected i/o is defined in lsp-notes.md
-- Capabilties/features defined in capabilities.md, should be listed once lsp-notes is near-completion.
+- Expected i/o is defined in the notes.
+- As many capabilities should be implemented as possible (server-side, not client-side (GOatpad))
 
 Lifecycle of the server (updated with my understanding):
 - Client spawns an instance of the server
@@ -21,19 +21,21 @@ Lifecycle of the server (updated with my understanding):
 - Client continues to send requests
 - Client shutsdown process with an `exit notification`
 
+```json
 Current TODOS {
-    utils: [
-        decoding JSON,
-        JSON-RPC header framing (Content-Length, Content-Type),
-        request/response ID tracking + cancellation,
-        message queueing for ordered responses,
-        progress token tracking ($/progress),
-        logging + trace helpers (window/logMessage, $/logTrace),
-        URI <-> path normalization,
-        document store + incremental text edits + versioning,
-        position encoding conversions (utf-16/utf-8),
-        glob matching for file ops/watched files (relative patterns),
-        diagnostics builder + publish helpers,
-        capability negotiation helper (client vs server),
+    "utils": [
+        "~~decoding JSON~~",
+        "~~JSON-RPC header framing (Content-Length, Content-Type)~~",
+        "NEXT TODO: URI <-> path normalization",
+        "request/response ID tracking + cancellation",
+        "message queueing for ordered responses",
+        "progress token tracking ($/progress)",
+        "logging + trace helpers (window/logMessage, $/logTrace)",
+        "document store + incremental text edits + versioning",
+        "position encoding conversions (utf-16/utf-8)",
+        "glob matching for file ops/watched files (relative patterns)",
+        "diagnostics builder + publish helpers",
+        "capability negotiation helper (client vs server)",
     ],
 }
+```
