@@ -1,4 +1,4 @@
-#include "JSON-encode.h"
+#include "headers/JSON-encode.h"
 #include <cctype>
 #include <string>
 
@@ -352,7 +352,7 @@ namespace
     }
 
     // Validates combinations of optional fields for strict JSON-RPC shapes
-    bool has_valid_message_shape(const incomingMessage &msg)
+    bool has_valid_message_shape(const Message &msg)
     {
         const bool has_id = msg.id.has_value();
         const bool has_method = msg.method.has_value();
@@ -380,7 +380,7 @@ namespace
         return is_request || is_notification || is_success_response || is_error_response;
     }
 
-    bool serialiseMessage(const incomingMessage &msg, std::string &out_json)
+    bool serialiseMessage(const Message &msg, std::string &out_json)
     {
         // Protocol version is always required and must be exactly 2.0
         if (msg.jsonrpc != 2.0f)
@@ -461,7 +461,7 @@ namespace
 
 } // namespace
 
-bool serialiseLspPacket(const incomingMessage &msg, std::string &out_packet)
+bool serialiseLspPacket(const Message &msg, std::string &out_packet)
 {
     std::string json_body;
     if (!serialiseMessage(msg, json_body))

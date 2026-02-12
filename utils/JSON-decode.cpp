@@ -42,7 +42,7 @@ Response:
     "error": string;
 }
 
-struct incomingMessage
+struct Message
 {
     float jsonrpc
     std::optional<int>
@@ -432,7 +432,7 @@ namespace
 } // namespace
 
 // Generic message, before determining which type it is
-struct incomingMessage
+struct Message
 {
     float jsonrpc; // Required in all incoming messages, so no default
     std::optional<int> id = std::nullopt;
@@ -442,7 +442,7 @@ struct incomingMessage
     std::optional<std::string> error = std::nullopt;
 };
 
-bool storeMessage(const std::string &json, incomingMessage &out)
+bool storeMessage(const std::string &json, Message &out)
 {
     // Extracts info from {"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}
     // into the struct defined above
@@ -461,7 +461,7 @@ bool storeMessage(const std::string &json, incomingMessage &out)
         return false;
     ++i;
 
-    incomingMessage msg{};
+    Message msg{};
     bool has_jsonrpc = false;
 
     while (i < s.size())

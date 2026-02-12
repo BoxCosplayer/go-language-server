@@ -2,7 +2,7 @@
 #include <string>
 #include <optional>
 
-struct incomingMessage
+struct Message
 {
     float jsonrpc; // Required in all incoming messages, validation handled via storeMessage()
     std::optional<int> id = std::nullopt;
@@ -12,4 +12,4 @@ struct incomingMessage
     std::optional<std::string> error = std::nullopt;
 };
 
-bool storeMessage(const std::string &json, incomingMessage &out);
+bool storeMessage(const std::string &json, Message &out);
