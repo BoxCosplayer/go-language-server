@@ -1,6 +1,6 @@
 #include "headers/JSON-encode.h"
+
 #include <cctype>
-#include <string>
 
 /*
 JSON serialisation (encoding a message)

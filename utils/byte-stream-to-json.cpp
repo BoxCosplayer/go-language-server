@@ -1,7 +1,7 @@
-#include <string>
+#include "headers/byte-stream-to-json.h"
+
 #include <unordered_map>
 #include <sstream>
-#include <istream>
 
 // Each Message is recieved via byte streams
 // We want JSON

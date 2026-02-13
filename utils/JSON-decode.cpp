@@ -1,9 +1,9 @@
+#include "headers/JSON-decode.h"
+
 #include <cctype>
 #include <climits>
 #include <cstdlib>
 #include <cstring>
-#include <string>
-#include <optional>
 
 /*
 JSON deserialisation (decoding a message)
@@ -430,17 +430,6 @@ namespace
         return true;
     }
 } // namespace
-
-// Generic message, before determining which type it is
-struct Message
-{
-    float jsonrpc; // Required in all incoming messages, so no default
-    std::optional<int> id = std::nullopt;
-    std::optional<std::string> method = std::nullopt;
-    std::optional<std::string> params_json = std::nullopt;
-    std::optional<std::string> result = std::nullopt;
-    std::optional<std::string> error = std::nullopt;
-};
 
 bool storeMessage(const std::string &json, Message &out)
 {
