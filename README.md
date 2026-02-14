@@ -26,7 +26,7 @@ Current TODOS {
     "utils": [
         "~~decoding JSON~~",
         "~~JSON-RPC header framing (Content-Length, Content-Type)~~",
-        "NEXT TODO: URI <-> path normalization",
+        "~~URI <-> path normalization~~",
         "request/response ID tracking + cancellation",
         "message queueing for ordered responses",
         "progress token tracking ($/progress)",
