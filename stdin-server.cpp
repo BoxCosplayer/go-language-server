@@ -1,6 +1,8 @@
 #include "utils/headers/byte-stream-to-json.h"
 #include "utils/headers/JSON-decode.h"
 #include "utils/headers/JSON-encode.h"
+#include "utils/headers/parameter-extraction.h"
+#include "utils/headers/print-helpers.h"
 #include <iostream>
 #include <string>
 #include <istream>
@@ -37,7 +39,20 @@ int main()
             std::cout << "No Method" << std::endl;
 
         if (msg.params_json.has_value())
+        {
             std::cout << "Params: " << *msg.params_json << std::endl;
+            ParameterTree params;
+            if (extractParameters(*msg.params_json, params))
+            {
+                std::cout << "Layered Params: ";
+                print_helpers::printParameterTree(params, std::cout);
+                std::cout << std::endl;
+            }
+            else
+            {
+                std::cout << "Params could not be parsed into layered struct" << std::endl;
+            }
+        }
         else
             std::cout << "No Parameters" << std::endl;
 
