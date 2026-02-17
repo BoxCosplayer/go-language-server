@@ -27,15 +27,17 @@ Current TODOS {
         "~~decoding JSON~~",
         "~~JSON-RPC header framing (Content-Length, Content-Type)~~",
         "~~URI <-> path normalization~~",
+        "~~logging + trace helpers (window/logMessage, $/logTrace)~~",
+    ],
+    "features": [
         "request/response ID tracking + cancellation",
         "message queueing for ordered responses",
         "progress token tracking ($/progress)",
-        "logging + trace helpers (window/logMessage, $/logTrace)",
         "document store + incremental text edits + versioning",
         "position encoding conversions (utf-16/utf-8)",
         "glob matching for file ops/watched files (relative patterns)",
         "diagnostics builder + publish helpers",
         "capability negotiation helper (client vs server)",
-    ],
+    ]
 }
 ```
