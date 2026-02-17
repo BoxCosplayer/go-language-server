@@ -77,18 +77,21 @@ bool initialiseLogger(const std::string& directory, std::string& out_logfile)
     std::error_code ec;
     std::filesystem::create_directories(directory, ec);
     if (ec)
-        return false;
+        out_logfile = "";
+    return false;
 
     // filename of log should be current datetime of initialisation
     std::string stamp;
     if (!format_current_time("%Y-%m-%d_%H-%M-%S", stamp))
-        return false;
+        out_logfile = "";
+    return false;
 
     out_logfile = directory + "/log-" + stamp + ".txt";
 
     std::ofstream out(out_logfile, std::ios::out | std::ios::trunc);
     if (!out.is_open())
-        return false;
+        out_logfile = "";
+    return false;
 
     out << "Log started\n";
     return true;
@@ -100,6 +103,9 @@ bool logEvent(const std::string& logfile,
     LogSeverity severity)
 {
     // Write event to logfile
+    if (logfile == "")
+        return false;
+
     std::string stamp;
     if (!format_current_time("%Y-%m-%d %H:%M:%S", stamp))
         return false;

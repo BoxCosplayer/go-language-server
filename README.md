@@ -41,3 +41,7 @@ Current TODOS {
     ]
 }
 ```
+
+
+Extra notes:
+The logger checks if the log exists before writing (if it wasnt created, logfile = ""), leading to a lot of potential function calls that return almost immediately. The code is "cleaner", but is the performace cost worth it -- is there even a performance cost to this?
