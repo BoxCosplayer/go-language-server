@@ -56,7 +56,7 @@ struct Message
 namespace
 {
     // Moves cursor past whitespace / special characters
-    void skip_ws(const std::string &s, size_t &i)
+    void skip_ws(const std::string& s, size_t& i)
     {
         while (i < s.size())
         {
@@ -68,7 +68,7 @@ namespace
     }
 
     // Reads JSON sting value
-    bool parse_string(const std::string &s, size_t &i, std::string &out)
+    bool parse_string(const std::string& s, size_t& i, std::string& out)
     {
         // If cursor is after the EoS
         // OR
@@ -100,7 +100,7 @@ namespace
                 char esc = s[i++];
                 switch (esc)
                 {
-                // Decodes JSON escape sequences -> ASCII escapes
+                    // Decodes JSON escape sequences -> ASCII escapes
                 case '"':
                 case '\\':
                 case '/':
@@ -121,7 +121,7 @@ namespace
                 case 't':
                     out.push_back('\t');
                     break;
-                // Case Unicode character is present -- analyse next 4 characters
+                    // Case Unicode character is present -- analyse next 4 characters
                 case 'u':
                 {
                     if (i + 4 > s.size())
@@ -169,7 +169,7 @@ namespace
 
     // Verifier tool to check value of keyword
     // Used for "true", "false" and "null"
-    bool parse_literal(const std::string &s, size_t &i, const char *literal)
+    bool parse_literal(const std::string& s, size_t& i, const char* literal)
     {
         size_t len = std::strlen(literal);
         if (s.compare(i, len, literal) == 0)
@@ -181,7 +181,7 @@ namespace
     }
 
     // Parse number when one is expected; used as framework for int-checking or float-checking
-    bool parse_number_token(const std::string &s, size_t &i, std::string &out)
+    bool parse_number_token(const std::string& s, size_t& i, std::string& out)
     {
         size_t start = i;
         // skip signage
@@ -217,7 +217,7 @@ namespace
     }
 
     // Parse number, when expecting an int
-    bool parse_number_int(const std::string &s, size_t &i, int &out)
+    bool parse_number_int(const std::string& s, size_t& i, int& out)
     {
         std::string token;
 
@@ -260,14 +260,14 @@ namespace
     }
 
     // Parse number, when expecting an float
-    bool parse_float_str(const std::string &s, float &out)
+    bool parse_float_str(const std::string& s, float& out)
     {
         if (s.empty())
             return false;
 
         // Converts string to double -- NOT casting
-        char *end = nullptr;
-        const char *cstr = s.c_str();
+        char* end = nullptr;
+        const char* cstr = s.c_str();
         double value = std::strtod(cstr, &end);
 
         // If we didn't consume the whole string, it's not a valid number
@@ -280,7 +280,7 @@ namespace
     }
 
     // Jump cursor to 1 character after the value
-    bool skip_value(const std::string &s, size_t &i)
+    bool skip_value(const std::string& s, size_t& i)
     {
         // If there's whitespace at the cursor, ignore it
         skip_ws(s, i);
@@ -292,7 +292,7 @@ namespace
         // Advance the cursor past the value
         switch (c)
         {
-        // Start (or end) of a string
+            // Start (or end) of a string
         case '"':
         {
             std::string tmp;
@@ -420,7 +420,7 @@ namespace
     }
 
     // Extracts value into outstring
-    bool extract_raw_value(const std::string &s, size_t &i, std::string &out)
+    bool extract_raw_value(const std::string& s, size_t& i, std::string& out)
     {
         skip_ws(s, i);
         size_t start = i;
@@ -431,11 +431,11 @@ namespace
     }
 } // namespace
 
-bool storeMessage(const std::string &json, Message &out)
+bool storeMessage(const std::string& json, Message& out)
 {
     // Extracts info from {"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}
     // into the struct defined above
-    const std::string &s = json;
+    const std::string& s = json;
     size_t i = 0;
     skip_ws(s, i);
     if (i >= s.size())

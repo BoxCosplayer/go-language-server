@@ -18,7 +18,7 @@
 
 namespace
 {
-    bool format_current_time(const char *format, std::string &out)
+    bool format_current_time(const char* format, std::string& out)
     {
         // Output current time into out, based on format
         std::time_t now = std::time(nullptr);
@@ -34,7 +34,7 @@ namespace
         return true;
     }
 
-    const char *to_string(LogEventType type)
+    const char* to_string(LogEventType type)
     {
         // LogEventType enum -> string
         // see headers/logger.h
@@ -54,7 +54,7 @@ namespace
         return "Misc";
     }
 
-    const char *to_string(LogSeverity severity)
+    const char* to_string(LogSeverity severity)
     {
         // LogSeverity enum -> string
         // see headers/logger.h
@@ -71,7 +71,7 @@ namespace
     }
 }
 
-bool initialiseLogger(const std::string &directory, std::string &out_logfile)
+bool initialiseLogger(const std::string& directory, std::string& out_logfile)
 {
     // Gets a viable filepath for the log, stores into out_logfile
     std::error_code ec;
@@ -94,10 +94,10 @@ bool initialiseLogger(const std::string &directory, std::string &out_logfile)
     return true;
 }
 
-bool logEvent(const std::string &logfile,
-              const std::string &event_description,
-              LogEventType event_type,
-              LogSeverity severity)
+bool logEvent(const std::string& logfile,
+    const std::string& event_description,
+    LogEventType event_type,
+    LogSeverity severity)
 {
     // Write event to logfile
     std::string stamp;

@@ -5,7 +5,7 @@
 
 namespace
 {
-    void skip_ws(const std::string &s, size_t &i)
+    void skip_ws(const std::string& s, size_t& i)
     {
         while (i < s.size())
         {
@@ -16,7 +16,7 @@ namespace
         }
     }
 
-    bool parse_hex4(const std::string &s, size_t &i, unsigned &code)
+    bool parse_hex4(const std::string& s, size_t& i, unsigned& code)
     {
         if (i + 4 > s.size())
             return false;
@@ -41,7 +41,7 @@ namespace
         return true;
     }
 
-    bool parse_string(const std::string &s, size_t &i, std::string &out)
+    bool parse_string(const std::string& s, size_t& i, std::string& out)
     {
         if (i >= s.size() || s[i] != '"')
             return false;
@@ -112,7 +112,7 @@ namespace
         return false;
     }
 
-    bool parse_literal(const std::string &s, size_t &i, const char *literal)
+    bool parse_literal(const std::string& s, size_t& i, const char* literal)
     {
         size_t j = 0;
         while (literal[j] != '\0')
@@ -125,7 +125,7 @@ namespace
         return true;
     }
 
-    bool parse_number(const std::string &s, size_t &i, double &out)
+    bool parse_number(const std::string& s, size_t& i, double& out)
     {
         size_t start = i;
 
@@ -171,14 +171,14 @@ namespace
         }
 
         std::string token = s.substr(start, i - start);
-        char *end = nullptr;
+        char* end = nullptr;
         out = std::strtod(token.c_str(), &end);
         return end == token.c_str() + token.size();
     }
 
-    bool parse_value(const std::string &s, size_t &i, ParameterValue &out);
+    bool parse_value(const std::string& s, size_t& i, ParameterValue& out);
 
-    bool parse_array(const std::string &s, size_t &i, std::vector<ParameterValue> &out)
+    bool parse_array(const std::string& s, size_t& i, std::vector<ParameterValue>& out)
     {
         if (i >= s.size() || s[i] != '[')
             return false;
@@ -223,7 +223,7 @@ namespace
         return false;
     }
 
-    bool parse_object(const std::string &s, size_t &i, std::map<std::string, ParameterValue> &out)
+    bool parse_object(const std::string& s, size_t& i, std::map<std::string, ParameterValue>& out)
     {
         if (i >= s.size() || s[i] != '{')
             return false;
@@ -278,7 +278,7 @@ namespace
         return false;
     }
 
-    bool parse_value(const std::string &s, size_t &i, ParameterValue &out)
+    bool parse_value(const std::string& s, size_t& i, ParameterValue& out)
     {
         skip_ws(s, i);
         if (i >= s.size())
@@ -347,7 +347,7 @@ namespace
     }
 } // namespace
 
-bool extractParameters(const std::string &params_json, ParameterTree &out)
+bool extractParameters(const std::string& params_json, ParameterTree& out)
 {
     size_t i = 0;
     skip_ws(params_json, i);

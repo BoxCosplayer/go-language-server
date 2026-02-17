@@ -22,7 +22,7 @@ struct outgoingMessage
 namespace
 {
     // Moves cursor past whitespace / special characters
-    void skip_ws(const std::string &s, size_t &i)
+    void skip_ws(const std::string& s, size_t& i)
     {
         while (i < s.size())
         {
@@ -34,7 +34,7 @@ namespace
     }
 
     // Reads JSON string value while validating escapes and control characters
-    bool parse_string(const std::string &s, size_t &i)
+    bool parse_string(const std::string& s, size_t& i)
     {
         if (i >= s.size() || s[i] != '"')
             return false;
@@ -93,7 +93,7 @@ namespace
 
     // Verifier tool to check value of keyword
     // Used for "true", "false" and "null"
-    bool parse_literal(const std::string &s, size_t &i, const char *literal)
+    bool parse_literal(const std::string& s, size_t& i, const char* literal)
     {
         size_t j = 0;
         while (literal[j] != '\0')
@@ -109,7 +109,7 @@ namespace
     // Parse number when one is expected
     // Implements JSON number grammar:
     // -? (0|[1-9][0-9]*) (.[0-9]+)? ([eE][+-]?[0-9]+)?
-    bool parse_number_token(const std::string &s, size_t &i)
+    bool parse_number_token(const std::string& s, size_t& i)
     {
         if (i >= s.size())
             return false;
@@ -161,7 +161,7 @@ namespace
     }
 
     // Jump cursor to 1 character after the value
-    bool skip_value(const std::string &s, size_t &i)
+    bool skip_value(const std::string& s, size_t& i)
     {
         skip_ws(s, i);
         if (i >= s.size())
@@ -172,11 +172,11 @@ namespace
         // Advance the cursor past the value
         switch (c)
         {
-        // Start (or end) of a string
+            // Start (or end) of a string
         case '"':
             return parse_string(s, i);
 
-        // Start of block
+            // Start of block
         case '{':
         {
             ++i;
@@ -279,7 +279,7 @@ namespace
     }
 
     // Ensure a string is exactly one valid JSON value
-    bool is_complete_json_value(const std::string &s)
+    bool is_complete_json_value(const std::string& s)
     {
         size_t i = 0;
         skip_ws(s, i);
@@ -295,7 +295,7 @@ namespace
 
     // Appends the separator before the next field
     // Handles first-field logic and comma placement
-    void append_field_prefix(std::string &out, bool &has_field)
+    void append_field_prefix(std::string& out, bool& has_field)
     {
         if (has_field)
             out.push_back(',');
@@ -304,7 +304,7 @@ namespace
 
     // Writes a JSON-escaped string into the output buffer
     // Example output: "textDocument/completion"
-    void append_escaped_json_string(const std::string &value, std::string &out)
+    void append_escaped_json_string(const std::string& value, std::string& out)
     {
         static const char hex[] = "0123456789ABCDEF";
 
@@ -352,7 +352,7 @@ namespace
     }
 
     // Validates combinations of optional fields for strict JSON-RPC shapes
-    bool has_valid_message_shape(const Message &msg)
+    bool has_valid_message_shape(const Message& msg)
     {
         const bool has_id = msg.id.has_value();
         const bool has_method = msg.method.has_value();
@@ -380,7 +380,7 @@ namespace
         return is_request || is_notification || is_success_response || is_error_response;
     }
 
-    bool serialiseMessage(const Message &msg, std::string &out_json)
+    bool serialiseMessage(const Message& msg, std::string& out_json)
     {
         // Protocol version is always required and must be exactly 2.0
         if (msg.jsonrpc != 2.0f)
@@ -461,7 +461,7 @@ namespace
 
 } // namespace
 
-bool serialiseLspPacket(const Message &msg, std::string &out_packet)
+bool serialiseLspPacket(const Message& msg, std::string& out_packet)
 {
     std::string json_body;
     if (!serialiseMessage(msg, json_body))
